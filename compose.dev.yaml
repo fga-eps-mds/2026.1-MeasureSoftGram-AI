@@ -30,6 +30,10 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+    env_file:
+      - ./env-vars/.mcp.env
+    depends_on:
+      - service
 
   mcp-inspector:
     image: node:20-slim
