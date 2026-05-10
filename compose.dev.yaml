@@ -1,4 +1,27 @@
+volumes:
+  service_postgres_data:
+
 services:
+  db:
+    container_name: msgram-postgres
+    image: postgres:18-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - service_postgres_data:/var/lib/postgresql
+    env_file:
+      - env-vars-example/.postgres.env
+
+  service:
+    container_name: msgram-service
+    image: 2026measuresoftgram/measuresoftgram-service:latest
+    command: [ "./start_service.sh" ]
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./env-vars/.service.env
+      - env-vars-example/.postgres.env
+
   mcp-server:
     build:
       context: .
