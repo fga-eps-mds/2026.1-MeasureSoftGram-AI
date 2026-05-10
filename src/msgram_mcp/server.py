@@ -7,12 +7,7 @@ SERVICE = os.getenv("SERVICE")
 if not SERVICE:
     raise ValueError("Variável de ambiente SERVICE não configurada")
 
-mcp_server = FastMCP(
-    "MeasureSoftGram",
-    host="0.0.0.0",
-    port=8000,
-    stateless_http=True
-)
+mcp_server = FastMCP("MeasureSoftGram", host="0.0.0.0", port=8000, stateless_http=True)
 
 register_tools(mcp_server, service=SERVICE)
 
