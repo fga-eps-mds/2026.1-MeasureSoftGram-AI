@@ -1,0 +1,19 @@
+services:
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  mcp-inspector:
+    image: node:20-slim
+    working_dir: /app
+    command: sh -c "HOST=0.0.0.0 npx --yes @modelcontextprotocol/inspector"
+    ports:
+      - "6274:6274"
+      - "6277:6277"
+    depends_on:
+      - mcp-server

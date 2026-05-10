@@ -1,0 +1,21 @@
+[project]
+name = "measuresoftgram-ai"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "watchfiles>=0.21.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
