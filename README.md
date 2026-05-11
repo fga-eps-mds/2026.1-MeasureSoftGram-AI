@@ -12,6 +12,21 @@ Com esse MCP conectado, um LLM consegue:
 - Acessar dados de análise e comparativos entre planejado e realizado
 - Navegar pela árvore de relacionamentos entre entidades do MeasureSoftGram
 
+## Como vincular a sua IA?
+
+Basta adicionar o MCP do seu agente através do comando enquanto roda o projeto localmente:
+
+```json
+{
+  "mcpServers": {
+    "measuresoftgram": {
+      "type": "streamable-http",
+      "url": "http://localhost:8000/mcp"
+    }
+  }
+}
+```
+
 ---
 
 ## Estrutura de pastas
