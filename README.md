@@ -1,6 +1,6 @@
 # MeasureSoftGram AI
 
-Servidor MCP (Model Context Protocol) que expõe os dados do [MeasureSoftGram](https://github.com/fga-eps-mds) como ferramentas para modelos de linguagem (LLMs).
+Servidor MCP (Model Context Protocol) que expõe os dados do MeasureSoftGram como ferramentas para modelos de linguagem (LLMs).
 
 ## O que é possível fazer
 
