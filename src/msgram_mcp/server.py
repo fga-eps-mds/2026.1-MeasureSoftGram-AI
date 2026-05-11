@@ -2,13 +2,15 @@ import os
 from dataclasses import dataclass
 
 from mcp.server.fastmcp import FastMCP
-from msgram_mcp.tools.supported_characteristics import register_tools as supported_characteristics
-from msgram_mcp.tools.organizations import register_tools as organization_register
+from msgram_mcp.tools.supported_characteristics import register_tools as supported_characteristics_tools
+from msgram_mcp.tools.organizations import register_tools as organization_register_tools
 from msgram_mcp.tools.supported_metrics import register_tools as register_metrics_tools
-from msgram_mcp.auth.msgram_auth import msgram_auth
-from msgram_mcp.tools.supported_measures import register_tools as register_measures_tools
-from msgram_mcp.tools.entity_relationship_tree import register_tools as register_entity_relationship_tree
 from msgram_mcp.tools.releases import register_tools as releases_tools
+from msgram_mcp.tools.supported_measures import register_tools as register_measures_tools
+from msgram_mcp.tools.entity_relationship_tree import register_tools as entity_relationship_tree_tools
+
+from msgram_mcp.auth.msgram_auth import msgram_auth
+from msgram_mcp.client import MsgramClient
 
 
 @dataclass(frozen=True)
@@ -25,21 +27,19 @@ class Settings:
         service = os.getenv("SERVICE")
         token = msgram_auth(service=service, user=os.getenv("MSGRAM_USER"), password=os.getenv("MSGRAM_PASSWORD"))
 
-        return cls(
-            service=service,
-            token=token,
-        )
+        return cls(service=service, token=token)
 
 
 def create_server(settings: Settings) -> FastMCP:
     mcp_server = FastMCP("MeasureSoftGram", host="0.0.0.0", port=8000, stateless_http=True)
+    client = MsgramClient(service=settings.service, token=settings.token)
 
-    supported_characteristics(mcp_server, service=settings.service)
-    organization_register(mcp_server, service=settings.service, token=settings.token)
-    register_metrics_tools(mcp_server, service=settings.service)
-    releases_tools(mcp_server, service=settings.service, token=settings.token)
-    register_measures_tools(mcp_server, service=settings.service)
-    register_entity_relationship_tree(mcp_server, service=settings.service)
+    supported_characteristics_tools(mcp_server, client=client)
+    organization_register_tools(mcp_server, client=client)
+    register_metrics_tools(mcp_server, client=client)
+    releases_tools(mcp_server, client=client)
+    register_measures_tools(mcp_server, client=client)
+    entity_relationship_tree_tools(mcp_server, client=client)
 
     return mcp_server
 

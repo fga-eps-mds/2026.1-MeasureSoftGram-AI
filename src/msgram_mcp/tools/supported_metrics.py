@@ -1,15 +1,10 @@
-import httpx
 from mcp.server.fastmcp import FastMCP
+from msgram_mcp.client import MsgramClient
 
 
-def register_tools(mcp: FastMCP, service: str):
+def register_tools(mcp: FastMCP, client: MsgramClient):
 
     @mcp.tool()
     def listar_metricas() -> list[dict]:
         """Lista todas as métricas suportadas pelo MeasureSoftGram."""
-        response = httpx.get(
-            f"{service}supported-metrics/",
-            headers={"accept": "application/json"},
-        )
-        response.raise_for_status()
-        return response.json()["results"]
+        return client.query_list(f"{client.service}supported-metrics/", public=True)

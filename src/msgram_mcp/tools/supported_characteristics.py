@@ -1,26 +1,15 @@
-import httpx
 from mcp.server.fastmcp import FastMCP
+from msgram_mcp.client import MsgramClient
 
 
-def register_tools(mcp: FastMCP, service: str):
-
-    def query(url: str) -> list[dict]:
-        response = httpx.get(
-            f"{url}",
-            headers={
-                "accept": "application/json"
-            },
-        )
-        response.raise_for_status()
-        return response.json()["results"]
+def register_tools(mcp: FastMCP, client: MsgramClient):
 
     @mcp.tool()
     def listar_caracteristicas() -> list[dict]:
         """Lista todas as características suportadas pelo MeasureSoftGram."""
-        return query(f"{service}supported-characteristics/")
-
+        return client.query_list(f"{client.service}supported-characteristics/", public=True)
 
     @mcp.tool()
     def listar_subcaracteristicas() -> list[dict]:
         """Lista todas as subcaracterísticas suportadas pelo MeasureSoftGram."""
-        return query(f"{service}supported-subcharacteristics/")
+        return client.query_list(f"{client.service}supported-subcharacteristics/", public=True)
