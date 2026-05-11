@@ -83,3 +83,42 @@ def test_listar_subcaracteristicas_erro_404_lanca_excecao(listar_subcaracteristi
         f"{client.service}supported-subcharacteristics/",
         public=True,
     )
+
+
+def test_listar_caracteristicas_retorno_sucesso_lista(listar_caracteristicas):
+    fn, client = listar_caracteristicas
+
+    expected = [
+        {"id": 1, "key": "reliability", "name": "Reliability", "description": None},
+        {"id": 2, "key": "maintainability", "name": "Maintainability", "description": None},
+    ]
+    client.query_list.return_value = expected
+
+    result = fn()
+
+    assert result == expected
+    assert isinstance(result, list)
+    client.query_list.assert_called_once_with(
+        f"{client.service}supported-characteristics/",
+        public=True,
+    )
+
+
+def test_listar_subcaracteristicas_retorno_sucesso_lista(listar_subcaracteristicas):
+    fn, client = listar_subcaracteristicas
+
+    expected = [
+        {"id": 1, "key": "testing_status", "name": "Testing Status", "description": None},
+        {"id": 2, "key": "maturity", "name": "Maturity", "description": None},
+    ]
+    client.query_list.return_value = expected
+
+    result = fn()
+
+    assert result == expected
+    assert isinstance(result, list)
+    client.query_list.assert_called_once_with(
+        f"{client.service}supported-subcharacteristics/",
+        public=True,
+    )
+
