@@ -1,29 +1,27 @@
 import pytest
 import httpx
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+
 from msgram_mcp.tools.supported_characteristics import register_tools
 
-MOCK_RESPONSE = {
-    "count": 4,
-    "next": None,
-    "previous": None,
-    "results": [
-        {"id": 1, "key": "modifiability", "name": "Modifiability", "description": None},
-        {
-            "id": 2,
-            "key": "testing_status",
-            "name": "Testing Status",
-            "description": None,
-        },
-        {
-            "id": 3,
-            "key": "functional_completeness",
-            "name": "Functional Completeness",
-            "description": None,
-        },
-        {"id": 4, "key": "maturity", "name": "Maturity", "description": None},
-    ],
-}
+
+@pytest.fixture
+def listar_caracteristicas():
+    tools = {}
+
+    class CaptureMCP:
+        def tool(self):
+            def decorator(fn):
+                tools[fn.__name__] = fn
+                return fn
+
+            return decorator
+
+    client = MagicMock()
+    client.service = "http://fake-service/api/v1/"
+
+    register_tools(CaptureMCP(), client=client)
+    return tools["listar_caracteristicas"], client
 
 
 @pytest.fixture
@@ -38,27 +36,50 @@ def listar_subcaracteristicas():
 
             return decorator
 
-    register_tools(CaptureMCP(), service="http://fake-service/api/v1/")
-    return tools["listar_subcaracteristicas"]
+    client = MagicMock()
+    client.service = "http://fake-service/api/v1/"
+
+    register_tools(CaptureMCP(), client=client)
+    return tools["listar_subcaracteristicas"], client
 
 
-@patch("msgram_mcp.tools.supported_characteristics.httpx.get")
-def test_retorna_lista(mock_get, listar_subcaracteristicas):
-    mock_get.return_value.json.return_value = MOCK_RESPONSE
-    assert isinstance(listar_subcaracteristicas(), list)
+def test_listar_caracteristicas_erro_404_lanca_excecao(listar_caracteristicas):
+    fn, client = listar_caracteristicas
 
-
-@patch("msgram_mcp.tools.supported_characteristics.httpx.get")
-def test_estrutura_do_item(mock_get, listar_subcaracteristicas):
-    mock_get.return_value.json.return_value = MOCK_RESPONSE
-    item = listar_subcaracteristicas()[0]
-    assert {"id", "key", "name", "description"} <= item.keys()
-
-
-@patch("msgram_mcp.tools.supported_characteristics.httpx.get")
-def test_erro_http_lanca_excecao(mock_get, listar_subcaracteristicas):
-    mock_get.return_value.raise_for_status.side_effect = httpx.HTTPStatusError(
-        "Server Error", request=MagicMock(), response=MagicMock()
+    request = MagicMock()
+    response = MagicMock(status_code=404)
+    client.query_list.side_effect = httpx.HTTPStatusError(
+        "Not Found",
+        request=request,
+        response=response,
     )
-    with pytest.raises(httpx.HTTPStatusError):
-        listar_subcaracteristicas()
+
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        fn()
+
+    assert exc_info.value.response.status_code == 404
+    client.query_list.assert_called_once_with(
+        f"{client.service}supported-characteristics/",
+        public=True,
+    )
+
+
+def test_listar_subcaracteristicas_erro_404_lanca_excecao(listar_subcaracteristicas):
+    fn, client = listar_subcaracteristicas
+
+    request = MagicMock()
+    response = MagicMock(status_code=404)
+    client.query_list.side_effect = httpx.HTTPStatusError(
+        "Not Found",
+        request=request,
+        response=response,
+    )
+
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        fn()
+
+    assert exc_info.value.response.status_code == 404
+    client.query_list.assert_called_once_with(
+        f"{client.service}supported-subcharacteristics/",
+        public=True,
+    )
