@@ -14,6 +14,7 @@ def registered_tools():
             def decorator(fn):
                 tools[fn.__name__] = fn
                 return fn
+
             return decorator
 
     client = MagicMock()
@@ -21,6 +22,7 @@ def registered_tools():
 
     register_tools(CaptureMCP(), client=client)
     return tools, client
+
 
 def test_buscar_release_config_atual_erro_404_lanca_excecao(registered_tools):
     tools, client = registered_tools
@@ -44,6 +46,7 @@ def test_buscar_release_config_atual_erro_404_lanca_excecao(registered_tools):
         f"{client.service}organizations/{organization_pk}/products/{product_pk}/current/release-config/"
     )
 
+
 def test_listar_releases_erro_404_lanca_excecao(registered_tools):
     tools, client = registered_tools
     request = MagicMock()
@@ -66,6 +69,7 @@ def test_listar_releases_erro_404_lanca_excecao(registered_tools):
         f"{client.service}organizations/{organization_pk}/products/{product_pk}/release/"
     )
 
+
 def test_verificar_release_valido_erro_404_lanca_excecao(registered_tools):
     tools, client = registered_tools
     request = MagicMock()
@@ -87,6 +91,7 @@ def test_verificar_release_valido_erro_404_lanca_excecao(registered_tools):
     client.query_detail.assert_called_once_with(
         f"{client.service}organizations/{organization_pk}/products/{product_pk}/release/is-valid/"
     )
+
 
 def test_buscar_release_erro_404_lanca_excecao(registered_tools):
     tools, client = registered_tools
@@ -111,6 +116,7 @@ def test_buscar_release_erro_404_lanca_excecao(registered_tools):
         f"{client.service}organizations/{organization_pk}/products/{product_pk}/release/{release_id}/"
     )
 
+
 def test_buscar_analysis_data_release_erro_404_lanca_excecao(registered_tools):
     tools, client = registered_tools
     request = MagicMock()
@@ -134,6 +140,7 @@ def test_buscar_analysis_data_release_erro_404_lanca_excecao(registered_tools):
         f"{client.service}organizations/{organization_pk}/products/{product_pk}/release/{release_id}/analysis_data/"
     )
 
+
 def test_buscar_planned_x_accomplished_erro_404_lanca_excecao(registered_tools):
     tools, client = registered_tools
     request = MagicMock()
@@ -156,6 +163,7 @@ def test_buscar_planned_x_accomplished_erro_404_lanca_excecao(registered_tools):
     client.query_detail.assert_called_once_with(
         f"{client.service}organizations/{organization_pk}/products/{product_pk}/release/{release_id}/planeed-x-accomplished/"
     )
+
 
 def test_buscar_release_config_atual_chama_url_correta(registered_tools):
     tools, client = registered_tools
@@ -209,7 +217,9 @@ def test_buscar_analysis_data_release_chama_url_correta(registered_tools):
     tools, client = registered_tools
     client.query_detail.return_value = {"metric": "value"}
 
-    result = tools["buscar_analysis_data_release"](organization_pk=1, product_pk=2, release_id=3)
+    result = tools["buscar_analysis_data_release"](
+        organization_pk=1, product_pk=2, release_id=3
+    )
 
     assert result == {"metric": "value"}
     client.query_detail.assert_called_once_with(
@@ -221,7 +231,9 @@ def test_buscar_planned_x_accomplished_chama_url_correta(registered_tools):
     tools, client = registered_tools
     client.query_detail.return_value = {"planned": 10, "accomplished": 8}
 
-    result = tools["buscar_planned_x_accomplished"](organization_pk=1, product_pk=2, release_id=3)
+    result = tools["buscar_planned_x_accomplished"](
+        organization_pk=1, product_pk=2, release_id=3
+    )
 
     assert result == {"planned": 10, "accomplished": 8}
     client.query_detail.assert_called_once_with(

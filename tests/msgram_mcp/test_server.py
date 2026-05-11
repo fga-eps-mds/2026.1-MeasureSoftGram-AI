@@ -44,7 +44,6 @@ class TestSettings:
 
 
 class TestCreateServer:
-
     def test_create_server_passa_client_correto_para_tools(self):
         settings = Settings(service="http://test/api/v1/", token="fake-token")
 

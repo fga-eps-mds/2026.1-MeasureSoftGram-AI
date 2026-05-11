@@ -68,4 +68,3 @@ def test_retorno_sucesso_lista_arvore_relacionamentos(listar_arvore_relacionamen
         f"{client.service}entity-relationship-tree/",
         public=True,
     )
-

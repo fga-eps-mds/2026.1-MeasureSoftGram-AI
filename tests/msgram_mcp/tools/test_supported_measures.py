@@ -22,6 +22,7 @@ def listar_medidas():
     register_tools(CaptureMCP(), client=client)
     return tools["listar_medidas"], client
 
+
 def test_erro_404_lanca_excecao(listar_medidas):
     fn, client = listar_medidas
 
@@ -49,7 +50,12 @@ def test_retorno_sucesso_lista_medidas(listar_medidas):
 
     expected = [
         {"id": 1, "key": "test_coverage", "name": "Test Coverage", "description": None},
-        {"id": 2, "key": "ci_feedback_time", "name": "CI Feedback Time", "description": None},
+        {
+            "id": 2,
+            "key": "ci_feedback_time",
+            "name": "CI Feedback Time",
+            "description": None,
+        },
     ]
     client.query_list.return_value = expected
 
@@ -61,4 +67,3 @@ def test_retorno_sucesso_lista_medidas(listar_medidas):
         f"{client.service}supported-measures/",
         public=True,
     )
-

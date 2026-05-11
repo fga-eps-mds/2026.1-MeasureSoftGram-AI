@@ -23,6 +23,7 @@ def registered_tools():
     register_tools(CaptureMCP(), client=client)
     return tools, client
 
+
 def test_listar_organizacoes_erro_404_lanca_excecao(registered_tools):
     tools, client = registered_tools
 
@@ -40,6 +41,7 @@ def test_listar_organizacoes_erro_404_lanca_excecao(registered_tools):
     assert exc_info.value.response.status_code == 404
     client.query_list.assert_called_once_with(f"{client.service}organizations/")
 
+
 def test_buscar_organizacao_erro_404_lanca_excecao(registered_tools):
     tools, client = registered_tools
 
@@ -56,7 +58,10 @@ def test_buscar_organizacao_erro_404_lanca_excecao(registered_tools):
         tools["buscar_organizacao"](org_id)
 
     assert exc_info.value.response.status_code == 404
-    client.query_detail.assert_called_once_with(f"{client.service}organizations/{org_id}/")
+    client.query_detail.assert_called_once_with(
+        f"{client.service}organizations/{org_id}/"
+    )
+
 
 def test_listar_produtos_erro_404_lanca_excecao(registered_tools):
     tools, client = registered_tools
@@ -78,6 +83,7 @@ def test_listar_produtos_erro_404_lanca_excecao(registered_tools):
         f"{client.service}organizations/{org_id}/products/"
     )
 
+
 def test_buscar_produto_erro_404_lanca_excecao(registered_tools):
     tools, client = registered_tools
 
@@ -98,6 +104,7 @@ def test_buscar_produto_erro_404_lanca_excecao(registered_tools):
     client.query_detail.assert_called_once_with(
         f"{client.service}organizations/{org_id}/products/{product_id}/"
     )
+
 
 def test_listar_organizacoes_chama_url_correta(registered_tools):
     tools, client = registered_tools

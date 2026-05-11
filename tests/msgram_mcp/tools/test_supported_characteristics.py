@@ -90,7 +90,12 @@ def test_listar_caracteristicas_retorno_sucesso_lista(listar_caracteristicas):
 
     expected = [
         {"id": 1, "key": "reliability", "name": "Reliability", "description": None},
-        {"id": 2, "key": "maintainability", "name": "Maintainability", "description": None},
+        {
+            "id": 2,
+            "key": "maintainability",
+            "name": "Maintainability",
+            "description": None,
+        },
     ]
     client.query_list.return_value = expected
 
@@ -108,7 +113,12 @@ def test_listar_subcaracteristicas_retorno_sucesso_lista(listar_subcaracteristic
     fn, client = listar_subcaracteristicas
 
     expected = [
-        {"id": 1, "key": "testing_status", "name": "Testing Status", "description": None},
+        {
+            "id": 1,
+            "key": "testing_status",
+            "name": "Testing Status",
+            "description": None,
+        },
         {"id": 2, "key": "maturity", "name": "Maturity", "description": None},
     ]
     client.query_list.return_value = expected
@@ -121,4 +131,3 @@ def test_listar_subcaracteristicas_retorno_sucesso_lista(listar_subcaracteristic
         f"{client.service}supported-subcharacteristics/",
         public=True,
     )
-

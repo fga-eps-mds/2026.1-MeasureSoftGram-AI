@@ -22,6 +22,7 @@ def listar_metricas():
     register_tools(CaptureMCP(), client=client)
     return tools["listar_metricas"], client
 
+
 def test_erro_404_lanca_excecao(listar_metricas):
     fn, client = listar_metricas
 
@@ -61,4 +62,3 @@ def test_retorno_sucesso_lista_metricas(listar_metricas):
         f"{client.service}supported-metrics/",
         public=True,
     )
-
