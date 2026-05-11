@@ -4,9 +4,9 @@ from mcp.server.fastmcp import FastMCP
 
 def register_tools(mcp: FastMCP, service: str, token: str):
 
-    def query(url: str) -> list[dict]:
+    def query_list(url: str) -> list[dict]:
         response = httpx.get(
-            f"{url}",
+            url,
             headers={
                 "accept": "application/json",
                 "Authorization": f"Token {token}",
@@ -15,7 +15,21 @@ def register_tools(mcp: FastMCP, service: str, token: str):
         response.raise_for_status()
         return response.json()["results"]
 
+    def query_detail(url: str) -> dict:
+        response = httpx.get(
+            url,
+            headers={
+                "accept": "application/json",
+                "Authorization": f"Token {token}",
+            },
+        )
+        response.raise_for_status()
+        return response.json()
 
     @mcp.tool()
     def listar_organizacoes() -> list[dict]:
-        return query(f"{service}organizations/")
+        return query_list(f"{service}organizations/")
+
+    @mcp.tool()
+    def buscar_organizacao(org_id: int) -> dict:
+        return query_detail(f"{service}organizations/{org_id}/")

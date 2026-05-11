@@ -22,7 +22,7 @@ services:
       - ./env-vars/.service.env
       - env-vars-example/.postgres.env
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/swagger" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/swagger/" ]
       interval: 5s
       timeout: 5s
       retries: 10
