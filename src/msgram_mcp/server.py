@@ -8,6 +8,7 @@ from msgram_mcp.tools.supported_metrics import register_tools as register_metric
 from msgram_mcp.auth.msgram_auth import msgram_auth
 from msgram_mcp.tools.supported_measures import register_tools as register_measures_tools
 from msgram_mcp.tools.entity_relationship_tree import register_tools as register_entity_relationship_tree
+from msgram_mcp.tools.releases import register_tools as releases_tools
 
 
 @dataclass(frozen=True)
@@ -36,6 +37,7 @@ def create_server(settings: Settings) -> FastMCP:
     supported_characteristics(mcp_server, service=settings.service)
     organization_register(mcp_server, service=settings.service, token=settings.token)
     register_metrics_tools(mcp_server, service=settings.service)
+    releases_tools(mcp_server, service=settings.service, token=settings.token)
     register_measures_tools(mcp_server, service=settings.service)
     register_entity_relationship_tree(mcp_server, service=settings.service)
 
