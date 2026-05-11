@@ -1,6 +1,6 @@
 import pytest
 import httpx
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from msgram_mcp.tools.entity_relationship_tree import register_tools
 
@@ -44,3 +44,28 @@ def test_erro_404_lanca_excecao(listar_arvore_relacionamentos):
         f"{client.service}entity-relationship-tree/",
         public=True,
     )
+
+
+def test_retorno_sucesso_lista_arvore_relacionamentos(listar_arvore_relacionamentos):
+    fn, client = listar_arvore_relacionamentos
+
+    expected = [
+        {
+            "id": 1,
+            "name": "Reliability",
+            "key": "reliability",
+            "description": None,
+            "subcharacteristics": [],
+        }
+    ]
+    client.query_list.return_value = expected
+
+    result = fn()
+
+    assert result == expected
+    assert isinstance(result, list)
+    client.query_list.assert_called_once_with(
+        f"{client.service}entity-relationship-tree/",
+        public=True,
+    )
+
