@@ -1,5 +1,6 @@
 import httpx
 
+
 class MsgramClient:
     def __init__(self, service: str, token: str):
         self.service = service

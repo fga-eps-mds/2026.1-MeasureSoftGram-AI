@@ -2,12 +2,18 @@ import os
 from dataclasses import dataclass
 
 from mcp.server.fastmcp import FastMCP
-from msgram_mcp.tools.supported_characteristics import register_tools as supported_characteristics_tools
+from msgram_mcp.tools.supported_characteristics import (
+    register_tools as supported_characteristics_tools,
+)
 from msgram_mcp.tools.organizations import register_tools as organization_register_tools
 from msgram_mcp.tools.supported_metrics import register_tools as register_metrics_tools
 from msgram_mcp.tools.releases import register_tools as releases_tools
-from msgram_mcp.tools.supported_measures import register_tools as register_measures_tools
-from msgram_mcp.tools.entity_relationship_tree import register_tools as entity_relationship_tree_tools
+from msgram_mcp.tools.supported_measures import (
+    register_tools as register_measures_tools,
+)
+from msgram_mcp.tools.entity_relationship_tree import (
+    register_tools as entity_relationship_tree_tools,
+)
 
 from msgram_mcp.auth.msgram_auth import msgram_auth
 from msgram_mcp.client import MsgramClient
@@ -20,18 +26,30 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> "Settings":
-        missing = [var for var in ("SERVICE", "MSGRAM_USER", "MSGRAM_PASSWORD") if not os.getenv(var)]
+        missing = [
+            var
+            for var in ("SERVICE", "MSGRAM_USER", "MSGRAM_PASSWORD")
+            if not os.getenv(var)
+        ]
         if missing:
-            raise ValueError(f"Variáveis de ambiente não configuradas: {', '.join(missing)}")
+            raise ValueError(
+                f"Variáveis de ambiente não configuradas: {', '.join(missing)}"
+            )
 
         service = os.getenv("SERVICE")
-        token = msgram_auth(service=service, user=os.getenv("MSGRAM_USER"), password=os.getenv("MSGRAM_PASSWORD"))
+        token = msgram_auth(
+            service=service,
+            user=os.getenv("MSGRAM_USER"),
+            password=os.getenv("MSGRAM_PASSWORD"),
+        )
 
         return cls(service=service, token=token)
 
 
 def create_server(settings: Settings) -> FastMCP:
-    mcp_server = FastMCP("MeasureSoftGram", host="0.0.0.0", port=8000, stateless_http=True)
+    mcp_server = FastMCP(
+        "MeasureSoftGram", host="0.0.0.0", port=8000, stateless_http=True
+    )
     client = MsgramClient(service=settings.service, token=settings.token)
 
     supported_characteristics_tools(mcp_server, client=client)

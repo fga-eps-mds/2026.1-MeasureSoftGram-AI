@@ -1,5 +1,6 @@
 import httpx
 
+
 def msgram_auth(service: str, user: str, password: str) -> str:
     response = httpx.post(
         f"{service}accounts/login/",

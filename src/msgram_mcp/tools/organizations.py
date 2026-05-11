@@ -22,4 +22,6 @@ def register_tools(mcp: FastMCP, client: MsgramClient):
     @mcp.tool()
     def buscar_produto(org_id: int, product_id: int) -> dict:
         """Retorna os detalhes de um produto pelo seu ID."""
-        return client.query_detail(f"{client.service}organizations/{org_id}/products/{product_id}/")
+        return client.query_detail(
+            f"{client.service}organizations/{org_id}/products/{product_id}/"
+        )
