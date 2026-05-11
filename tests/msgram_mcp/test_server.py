@@ -44,19 +44,6 @@ class TestSettings:
 
 
 class TestCreateServer:
-    def test_create_server_passa_client_correto_para_tools(self):
-        settings = Settings(service="http://test/api/v1/", token="fake-token")
-
-        with patch("msgram_mcp.server.supported_characteristics_tools") as mock_tool, \
-                patch("msgram_mcp.server.organization_register_tools"), \
-                patch("msgram_mcp.server.register_metrics_tools"), \
-                patch("msgram_mcp.server.releases_tools"), \
-                patch("msgram_mcp.server.register_measures_tools"), \
-                patch("msgram_mcp.server.entity_relationship_tree_tools"):
-            create_server(settings)
-
-        _, kwargs = mock_tool.call_args
-        assert kwargs["client"].service == "http://test/api/v1/"
 
     def test_create_server_passa_client_correto_para_tools(self):
         settings = Settings(service="http://test/api/v1/", token="fake-token")
