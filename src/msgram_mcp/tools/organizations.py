@@ -33,3 +33,11 @@ def register_tools(mcp: FastMCP, service: str, token: str):
     @mcp.tool()
     def buscar_organizacao(org_id: int) -> dict:
         return query_detail(f"{service}organizations/{org_id}/")
+
+    @mcp.tool()
+    def listar_produtos(org_id: int) -> list[dict]:
+        return query_list(f"{service}organizations/{org_id}/products/")
+
+    @mcp.tool()
+    def buscar_produto(org_id: int, product_id: int) -> dict:
+        return query_detail(f"{service}organizations/{org_id}/products/{product_id}/")
