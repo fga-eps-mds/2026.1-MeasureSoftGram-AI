@@ -62,8 +62,7 @@ def create_server(settings: Settings) -> FastMCP:
     return mcp_server
 
 
-settings = Settings.from_env()
-mcp_server = create_server(settings)
-
 if __name__ == "__main__":
+    settings = Settings.from_env()
+    mcp_server = create_server(settings)
     mcp_server.run(transport="streamable-http")

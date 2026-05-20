@@ -18,3 +18,8 @@ def register_tools(mcp: FastMCP, client: MsgramClient):
     def listar_repositorios_github() -> list[dict]:
         """Lista os repositórios do GitHub do usuário autenticado."""
         return client.query_list(f"{client.service}accounts/user-repos/")
+
+    @mcp.tool()
+    def listar_usuarios() -> list[dict]:
+        """Lista todos os usuários cadastrados."""
+        return client.query_list(f"{client.service}accounts/users/")
