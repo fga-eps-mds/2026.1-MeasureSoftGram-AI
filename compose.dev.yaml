@@ -14,7 +14,7 @@ services:
 
   service:
     container_name: msgram-service
-    image: 2026measuresoftgram/measuresoftgram-service:latest
+    image: measuresoftgram/service:homolog
     command: [ "./start_service.sh" ]
     ports:
       - "8080:8080"
