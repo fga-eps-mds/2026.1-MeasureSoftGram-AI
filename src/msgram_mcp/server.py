@@ -8,6 +8,11 @@ from msgram_mcp.tools.supported_characteristics import (
 from msgram_mcp.tools.organizations import register_tools as organization_register_tools
 from msgram_mcp.tools.supported_metrics import register_tools as register_metrics_tools
 from msgram_mcp.tools.releases import register_tools as releases_tools
+from msgram_mcp.tools.balance_matrix import register_tools as balance_matrix_tools
+from msgram_mcp.tools.goals import register_tools as goals_tools
+from msgram_mcp.tools.historical_values import register_tools as historical_values_tools
+from msgram_mcp.tools.latest_values import register_tools as latest_values_tools
+from msgram_mcp.tools.repositories import register_tools as repositories_tools
 from msgram_mcp.tools.supported_measures import (
     register_tools as register_measures_tools,
 )
@@ -58,6 +63,11 @@ def create_server(settings: Settings) -> FastMCP:
     releases_tools(mcp_server, client=client)
     register_measures_tools(mcp_server, client=client)
     entity_relationship_tree_tools(mcp_server, client=client)
+    balance_matrix_tools(mcp_server, client=client)
+    goals_tools(mcp_server, client=client)
+    historical_values_tools(mcp_server, client=client)
+    latest_values_tools(mcp_server, client=client)
+    repositories_tools(mcp_server, client=client)
 
     return mcp_server
 
