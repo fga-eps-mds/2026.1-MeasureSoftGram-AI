@@ -1,0 +1,54 @@
+volumes:
+  service_postgres_data:
+
+services:
+  db:
+    container_name: msgram-postgres
+    image: postgres:18-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - service_postgres_data:/var/lib/postgresql
+    env_file:
+      - env-vars-example/.postgres.env
+
+  service:
+    container_name: msgram-service
+    image: measuresoftgram/service:homolog
+    command: [ "./start_service.sh" ]
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./env-vars/.service.env
+      - env-vars-example/.postgres.env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/swagger/" ]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - ./env-vars/.mcp.env
+    depends_on:
+      service:
+        condition: service_healthy
+
+  mcp-inspector:
+    image: node:20-slim
+    working_dir: /app
+    command: sh -c "HOST=0.0.0.0 npx --yes @modelcontextprotocol/inspector"
+    ports:
+      - "6274:6274"
+      - "6277:6277"
+    depends_on:
+      - mcp-server
