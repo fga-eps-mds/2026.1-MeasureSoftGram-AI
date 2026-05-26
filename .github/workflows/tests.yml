@@ -2,7 +2,7 @@ name: Testes
 
 on:
   push:
-    branches: ["**"]
+    branches: [main, develop]
   pull_request:
     branches: [main, develop]
 
@@ -28,7 +28,6 @@ jobs:
           pytest --cov=src --cov-branch --cov-report=xml:coverage.xml --cov-report=term-missing --junitxml=junit.xml
 
       - name: Scanner do SonarCloud
-        if: github.event_name == 'pull_request'
         uses: SonarSource/sonarqube-scan-action@v7
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
