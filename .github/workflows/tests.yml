@@ -21,14 +21,11 @@ jobs:
           python-version: "3.11"
 
       - name: Instalar dependências
-        run: pip install -e ".[dev]" coverage
+        run: pip install -e ".[dev]"
 
       - name: Rodar testes com cobertura
         run: |
-          coverage erase
-          coverage run -m pytest --junitxml=junit.xml
-          coverage xml -o coverage.xml
-          coverage report --show-missing
+          pytest --cov=src --cov-branch --cov-report=xml:coverage.xml --cov-report=term-missing --junitxml=junit.xml
 
       - name: Scanner do SonarCloud
         if: github.event_name == 'pull_request'
