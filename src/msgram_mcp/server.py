@@ -51,9 +51,12 @@ class Settings:
         return cls(service=service, token=token)
 
 
-def create_server(settings: Settings) -> FastMCP:
+def create_server(settings: Settings, transport: str) -> FastMCP:
     mcp_server = FastMCP(
-        "MeasureSoftGram", host="0.0.0.0", port=8000, stateless_http=True
+        "MeasureSoftGram",
+        host="0.0.0.0",
+        port=8000,
+        stateless_http=(transport == "streamable-http"),
     )
     client = MsgramClient(service=settings.service, token=settings.token)
 
@@ -74,5 +77,6 @@ def create_server(settings: Settings) -> FastMCP:
 
 if __name__ == "__main__":
     settings = Settings.from_env()
-    mcp_server = create_server(settings)
-    mcp_server.run(transport="streamable-http")
+    transport = os.getenv("MCP_TRANSPORT", "streamable-http")
+    mcp_server = create_server(settings, transport)
+    mcp_server.run(transport=transport)
