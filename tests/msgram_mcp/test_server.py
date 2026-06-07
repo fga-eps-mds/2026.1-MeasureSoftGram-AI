@@ -44,18 +44,51 @@ class TestSettings:
 
 
 class TestCreateServer:
-    def test_create_server_passa_client_correto_para_tools(self):
-        settings = Settings(service="http://test/api/v1/", token="fake-token")
-
+    def _create_server_com_mocks(self, settings, transport="streamable-http"):
         with patch("msgram_mcp.server.supported_characteristics_tools") as mock_tool:
             with patch("msgram_mcp.server.organization_register_tools"):
                 with patch("msgram_mcp.server.register_metrics_tools"):
                     with patch("msgram_mcp.server.releases_tools"):
                         with patch("msgram_mcp.server.register_measures_tools"):
-                            with patch(
-                                "msgram_mcp.server.entity_relationship_tree_tools"
-                            ):
-                                create_server(settings)
+                            with patch("msgram_mcp.server.entity_relationship_tree_tools"):
+                                create_server(settings, transport)
+        return mock_tool
+
+    def test_create_server_passa_client_correto_para_tools(self):
+        settings = Settings(service="http://test/api/v1/", token="fake-token")
+        mock_tool = self._create_server_com_mocks(settings)
 
         _, kwargs = mock_tool.call_args
         assert kwargs["client"].service == "http://test/api/v1/"
+
+    def test_create_server_streamable_http_usa_stateless(self):
+        settings = Settings(service="http://test/api/v1/", token="fake-token")
+
+        with patch("msgram_mcp.server.FastMCP") as mock_mcp:
+            with patch("msgram_mcp.server.supported_characteristics_tools"):
+                with patch("msgram_mcp.server.organization_register_tools"):
+                    with patch("msgram_mcp.server.register_metrics_tools"):
+                        with patch("msgram_mcp.server.releases_tools"):
+                            with patch("msgram_mcp.server.register_measures_tools"):
+                                with patch("msgram_mcp.server.entity_relationship_tree_tools"):
+                                    create_server(settings, "streamable-http")
+
+        mock_mcp.assert_called_once_with(
+            "MeasureSoftGram", host="0.0.0.0", port=8000, stateless_http=True
+        )
+
+    def test_create_server_sse_nao_usa_stateless(self):
+        settings = Settings(service="http://test/api/v1/", token="fake-token")
+
+        with patch("msgram_mcp.server.FastMCP") as mock_mcp:
+            with patch("msgram_mcp.server.supported_characteristics_tools"):
+                with patch("msgram_mcp.server.organization_register_tools"):
+                    with patch("msgram_mcp.server.register_metrics_tools"):
+                        with patch("msgram_mcp.server.releases_tools"):
+                            with patch("msgram_mcp.server.register_measures_tools"):
+                                with patch("msgram_mcp.server.entity_relationship_tree_tools"):
+                                    create_server(settings, "sse")
+
+        mock_mcp.assert_called_once_with(
+            "MeasureSoftGram", host="0.0.0.0", port=8000, stateless_http=False
+        )
