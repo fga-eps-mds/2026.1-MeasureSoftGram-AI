@@ -2,7 +2,7 @@ import pytest
 import httpx
 from unittest.mock import MagicMock
 
-from msgram_mcp.tools.releases import register_tools
+from msgram_mcp.tools.releases import register_tools, _label_planned_x_accomplished
 
 
 @pytest.fixture
@@ -227,15 +227,128 @@ def test_buscar_analysis_data_release_chama_url_correta(registered_tools):
     )
 
 
-def test_buscar_planned_x_accomplished_chama_url_correta(registered_tools):
+def test_buscar_planned_x_accomplished_chama_url_correta_e_trata_dados(registered_tools):
     tools, client = registered_tools
-    client.query_detail.return_value = {"planned": 10, "accomplished": 8}
+    client.query_detail.return_value = {
+        "planned": [80, 70, 90],
+        "accomplished": [75, 70, 95],
+    }
 
     result = tools["buscar_planned_x_accomplished"](
         organization_pk=1, product_pk=2, release_id=3
     )
 
-    assert result == {"planned": 10, "accomplished": 8}
     client.query_detail.assert_called_once_with(
         "http://fake-service/api/v1/organizations/1/products/2/release/3/planeed-x-accomplished/"
     )
+
+    assert result["raw"] == {
+        "planned": [80, 70, 90],
+        "accomplished": [75, 70, 95],
+    }
+    assert result["treatment_error"] is None
+    assert result["characteristics"] == [
+        {
+            "name": "Reliability",
+            "planned": 80,
+            "accomplished": 75,
+            "diff": 5,
+            "norm_diff": 5,
+        },
+        {
+            "name": "Maintainability",
+            "planned": 70,
+            "accomplished": 70,
+            "diff": 0,
+            "norm_diff": 0,
+        },
+        {
+            "name": "Functional Suitability",
+            "planned": 90,
+            "accomplished": 95,
+            "diff": -5,
+            "norm_diff": 0,
+        },
+    ]
+
+
+def test_buscar_planned_x_accomplished_erro_no_tratamento_retorna_raw_com_erro(
+    registered_tools,
+):
+    tools, client = registered_tools
+    client.query_detail.return_value = {"unexpected": "shape"}
+
+    result = tools["buscar_planned_x_accomplished"](
+        organization_pk=1, product_pk=2, release_id=3
+    )
+
+    client.query_detail.assert_called_once_with(
+        "http://fake-service/api/v1/organizations/1/products/2/release/3/planeed-x-accomplished/"
+    )
+
+    assert result["raw"] == {"unexpected": "shape"}
+    assert result["characteristics"] is None
+    assert result["treatment_error"] is not None
+
+
+def test_label_planned_x_accomplished_calcula_diff_e_norm_diff():
+    raw = {
+        "planned": [80, 70, 90],
+        "accomplished": [75, 70, 95],
+    }
+
+    result = _label_planned_x_accomplished(raw)
+
+    assert result == {
+        "characteristics": [
+            {
+                "name": "Reliability",
+                "planned": 80,
+                "accomplished": 75,
+                "diff": 5,
+                "norm_diff": 5,
+            },
+            {
+                "name": "Maintainability",
+                "planned": 70,
+                "accomplished": 70,
+                "diff": 0,
+                "norm_diff": 0,
+            },
+            {
+                "name": "Functional Suitability",
+                "planned": 90,
+                "accomplished": 95,
+                "diff": -5,
+                "norm_diff": 0,
+            },
+        ]
+    }
+
+
+def test_label_planned_x_accomplished_lida_com_lista_menor_que_names():
+    raw = {
+        "planned": [50],
+        "accomplished": [40],
+    }
+
+    result = _label_planned_x_accomplished(raw)
+
+    assert result == {
+        "characteristics": [
+            {
+                "name": "Reliability",
+                "planned": 50,
+                "accomplished": 40,
+                "diff": 10,
+                "norm_diff": 10,
+            },
+        ]
+    }
+
+
+def test_label_planned_x_accomplished_chave_ausente_lanca_excecao():
+    raw = {"planned": [10, 20, 30]}
+
+    with pytest.raises(KeyError):
+        _label_planned_x_accomplished(raw)
