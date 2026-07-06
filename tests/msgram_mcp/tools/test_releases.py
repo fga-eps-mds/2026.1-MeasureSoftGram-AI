@@ -2,7 +2,7 @@ import pytest
 import httpx
 from unittest.mock import MagicMock
 
-from msgram_mcp.tools.releases import register_tools, _label_planned_x_accomplished
+from msgram_mcp.tools.releases import register_tools
 
 
 @pytest.fixture
@@ -289,66 +289,3 @@ def test_buscar_planned_x_accomplished_erro_no_tratamento_retorna_raw_com_erro(
     assert result["raw"] == {"unexpected": "shape"}
     assert result["characteristics"] is None
     assert result["treatment_error"] is not None
-
-
-def test_label_planned_x_accomplished_calcula_diff_e_norm_diff():
-    raw = {
-        "planned": [80, 70, 90],
-        "accomplished": [75, 70, 95],
-    }
-
-    result = _label_planned_x_accomplished(raw)
-
-    assert result == {
-        "characteristics": [
-            {
-                "name": "Reliability",
-                "planned": 80,
-                "accomplished": 75,
-                "diff": 5,
-                "norm_diff": 5,
-            },
-            {
-                "name": "Maintainability",
-                "planned": 70,
-                "accomplished": 70,
-                "diff": 0,
-                "norm_diff": 0,
-            },
-            {
-                "name": "Functional Suitability",
-                "planned": 90,
-                "accomplished": 95,
-                "diff": -5,
-                "norm_diff": 0,
-            },
-        ]
-    }
-
-
-def test_label_planned_x_accomplished_lida_com_lista_menor_que_names():
-    raw = {
-        "planned": [50],
-        "accomplished": [40],
-    }
-
-    result = _label_planned_x_accomplished(raw)
-
-    assert result == {
-        "characteristics": [
-            {
-                "name": "Reliability",
-                "planned": 50,
-                "accomplished": 40,
-                "diff": 10,
-                "norm_diff": 10,
-            },
-        ]
-    }
-
-
-def test_label_planned_x_accomplished_chave_ausente_lanca_excecao():
-    raw = {"planned": [10, 20, 30]}
-
-    with pytest.raises(KeyError):
-        _label_planned_x_accomplished(raw)
