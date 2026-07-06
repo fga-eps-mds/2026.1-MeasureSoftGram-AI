@@ -271,7 +271,6 @@ def test_buscar_planned_x_accomplished_chama_url_correta_e_trata_dados(registere
         },
     ]
 
-
 def test_buscar_planned_x_accomplished_erro_no_tratamento_retorna_raw_com_erro(
     registered_tools,
 ):
